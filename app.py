@@ -6,6 +6,7 @@ import torch
 import cv2
 import os
 import time
+from ultralytics import YOLO
 
 st.set_page_config(layout="wide")
 
@@ -40,6 +41,11 @@ def video_input(data_src):
     vid_file = None
     if data_src == 'Sample data':
         vid_file = "data/sample_videos/sample.mp4"
+    elif data_src == 'Webcam':
+        url = st.sidebar.text_input("rtsp url")
+        if url:
+            vid_file = url
+        
     else:
         vid_bytes = st.sidebar.file_uploader("Upload a video", type=['mp4', 'mpv', 'avi'])
         if vid_bytes:
@@ -99,15 +105,17 @@ def infer_image(img, size=None):
     return image
 
 
-@st.experimental_singleton
+@st.cache_resource
 def load_model(path, device):
-    model_ = torch.hub.load('ultralytics/yolov5', 'custom', path=path, force_reload=True)
+    # todo: conflict on changing models with this torch.hub.load()
+    #model_ = torch.hub.load('ultralytics/yolov5', 'custom', path=path, force_reload=True)
+    model_ = torch.hub.load("ultralytics/yolov5", "yolov5s", pretrained=True)
     model_.to(device)
     print("model to ", device)
     return model_
 
 
-@st.experimental_singleton
+@st.cache_resource
 def download_model(url):
     model_file = wget.download(url, out="models")
     return model_file
@@ -140,7 +148,7 @@ def main():
     st.sidebar.title("Settings")
 
     # upload model
-    model_src = st.sidebar.radio("Select yolov5 weight file", ["Use our demo model 5s", "Use your own model"])
+    model_src = st.sidebar.radio("Select yolov5 weight file", ["Use yolov5s Model", "Use yolov8 Model", "Use your own model"])
     # URL, upload file (max 200 mb)
     if model_src == "Use your own model":
         user_model_path = get_user_model()
@@ -149,6 +157,8 @@ def main():
 
         st.sidebar.text(cfg_model_path.split("/")[-1])
         st.sidebar.markdown("---")
+    elif model_src == 'Use yolov8 Model':
+        cfg_model_path = "models/yolov8n.pt"
 
     # check if model file is available
     if not os.path.isfile(cfg_model_path):
@@ -180,12 +190,11 @@ def main():
         # input options
         input_option = st.sidebar.radio("Select input type: ", ['image', 'video'])
 
-        # input src option
-        data_src = st.sidebar.radio("Select input source: ", ['Sample data', 'Upload your own data'])
-
         if input_option == 'image':
+            data_src = st.sidebar.radio("Select input source: ", ['Sample data', 'Upload your own data'])
             image_input(data_src)
         else:
+            data_src = st.sidebar.radio("Select input source: ", ['Sample data', 'Upload your own data', 'Webcam'])
             video_input(data_src)
 
 
