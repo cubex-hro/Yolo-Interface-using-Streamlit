@@ -19,8 +19,7 @@ A web interface for real-time yolo inference using streamlit. It supports CPU an
 
 
 ## How to run
-Make shure you have installed Python and PIP
-You also need
+Make shure you have installed Python and PIP. You also need:
 1. [Ultralytics](https://github.com/ultralytics/ultralytics)
    - `pip install ultralytics`
 2. [Streamlit](https://docs.streamlit.io/library/get-started/installation)
