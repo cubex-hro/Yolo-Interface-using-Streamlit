@@ -3,7 +3,7 @@ import streamlit as st
 import wget
 from PIL import Image
 import torch
-import torchvision
+import torchvision.models as models
 import cv2
 import os
 import time
