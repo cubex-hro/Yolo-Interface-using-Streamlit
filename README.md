@@ -11,6 +11,7 @@ A web interface for real-time yolo inference using streamlit. It supports CPU an
 - Supports uploading model files (<200MB) and downloading models from URL (any size)
 - Supports both images and videos.
 - Supports both CPU and GPU inference.
+- **NEW**: supports rtsp webcam stream
 - Supports:
   - Custom Classes
   - Changing Confidence
